@@ -51,8 +51,12 @@ def serve_index():
 @app.route("/<path:path>")
 def serve_static(path):
     if path.startswith("api") or path.startswith("health"):
-        # Never treat API or health routes as static files
-        return jsonify({"error": "Endpoint not found", "path": path}), 404
+        # Diagnose exactly what headers and environ Vercel passed
+        return jsonify({
+            "intercepted_path": path,
+            "headers": dict(request.headers),
+            "environ": {k: str(request.environ[k]) for k in request.environ if any(x in k.lower() for x in ['matched', 'path', 'uri', 'url', 'vercel', 'route', 'query'])}
+        }), 200
     if os.path.exists(os.path.join(FRONTEND_DIR, path)):
         return send_from_directory(FRONTEND_DIR, path)
     if os.path.exists(os.path.join(FRONTEND_DIR, "index.html")):
