@@ -17,12 +17,16 @@ from backend.config import FRONTEND_DIR
 app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
 CORS(app)
 
-# Register API blueprints
+# Register API blueprints for both /api and direct prefix
 app.register_blueprint(recommend_bp, url_prefix="/api")
+app.register_blueprint(recommend_bp, url_prefix="", name="recommend_root")
 app.register_blueprint(sentiment_bp, url_prefix="/api")
+app.register_blueprint(sentiment_bp, url_prefix="", name="sentiment_root")
 
 
 @app.route("/api/health", methods=["GET"])
+@app.route("/health", methods=["GET"])
+@app.route("/api", methods=["GET"])
 def health():
     return jsonify({
         "status": "ok",
