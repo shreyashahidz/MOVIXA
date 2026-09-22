@@ -1,0 +1,3 @@
+timestamp,module,algorithm,metric_1_name,metric_1_val,metric_2_name,metric_2_val,metric_3_name,metric_3_val,metric_4_name,metric_4_val
+2026-09-22 16:02:39,Clustering_Recommender,KMeans(k=15),Silhouette_Score,0.2109,Davies_Bouldin,0.9924,Inertia,1060.36,Total_Items,4800.0
+2026-09-22 16:02:43,Sentiment_Classifier,LogisticRegression,Accuracy,0.9055,Precision,0.8935,Recall,0.9208,F1_Score,0.907
