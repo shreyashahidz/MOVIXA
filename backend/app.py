@@ -51,28 +51,17 @@ def serve_index():
 @app.route("/<path:path>")
 def serve_static(path):
     if path.startswith("api") or path.startswith("health"):
-        # Diagnose exactly what headers and environ Vercel passed
-        return jsonify({
-            "intercepted_path": path,
-            "headers": dict(request.headers),
-            "environ": {k: str(request.environ[k]) for k in request.environ if any(x in k.lower() for x in ['matched', 'path', 'uri', 'url', 'vercel', 'route', 'query'])}
-        }), 200
+        return jsonify({"error": "Endpoint not found"}), 404
     if os.path.exists(os.path.join(FRONTEND_DIR, path)):
         return send_from_directory(FRONTEND_DIR, path)
     if os.path.exists(os.path.join(FRONTEND_DIR, "index.html")):
         return send_from_directory(FRONTEND_DIR, "index.html")
-    return jsonify({"error": "Static file not found", "path": path}), 404
+    return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(404)
 def not_found(e):
-    return jsonify({
-        "error": "Resource not found",
-        "path": request.path,
-        "full_path": request.full_path,
-        "headers": {k: v for k, v in request.headers.items() if any(x in k.lower() for x in ['vercel', 'matched', 'forward', 'host'])},
-        "environ": {k: str(request.environ[k]) for k in request.environ if any(x in k.lower() for x in ['matched', 'uri', 'path', 'url'])}
-    }), 404
+    return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(500)

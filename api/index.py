@@ -1,5 +1,6 @@
 import os
 import sys
+import urllib.parse
 
 # Ensure repository root is in sys.path for backend and model loading
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -8,33 +9,23 @@ if BASE_DIR not in sys.path:
 
 from backend.app import app
 
-class VercelFixMiddleware:
+class VercelRouteMiddleware:
     """
     WSGI Middleware for Vercel Python Serverless Functions.
-    Vercel sets the rewritten request path to `api/index.py`,
-    while placing the real client request path (e.g. `/api/movies?page=1`)
-    in `HTTP_X_MATCHED_PATH` or `REQUEST_URI`.
-    This middleware restores the original PATH_INFO and QUERY_STRING so
-    Flask routes match effortlessly.
+    Extracts the targeted route from `__route` query parameter passed by
+    Vercel's rewrite rule, cleans up the query string, and updates PATH_INFO
+    so Flask routes match perfectly.
     """
     def __init__(self, wsgi_app):
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
-        matched = (
-            environ.get("HTTP_X_MATCHED_PATH")
-            or environ.get("HTTP_X_VERCEL_PATH")
-            or environ.get("REQUEST_URI")
-            or environ.get("RAW_URI")
-        )
-        if matched:
-            if "?" in matched:
-                path, qs = matched.split("?", 1)
-                environ["PATH_INFO"] = path
-                if not environ.get("QUERY_STRING"):
-                    environ["QUERY_STRING"] = qs
-            else:
-                environ["PATH_INFO"] = matched
+        qs = environ.get("QUERY_STRING", "")
+        params = urllib.parse.parse_qs(qs, keep_blank_values=True)
+        if "__route" in params:
+            route = params.pop("__route", [""])[0].strip("/")
+            environ["QUERY_STRING"] = urllib.parse.urlencode([(k, v) for k, vs in params.items() for v in vs])
+            environ["PATH_INFO"] = f"/api/{route}" if route else "/api/health"
         return self.wsgi_app(environ, start_response)
 
-app.wsgi_app = VercelFixMiddleware(app.wsgi_app)
+app.wsgi_app = VercelRouteMiddleware(app.wsgi_app)
