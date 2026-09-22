@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback
 
 # Ensure root workspace is in sys.path when running app.py directly
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -71,8 +72,15 @@ def not_found(e):
 
 
 @app.errorhandler(500)
+@app.errorhandler(Exception)
 def server_error(e):
-    return jsonify({"error": "Internal server error"}), 500
+    original = getattr(e, "original_exception", e)
+    return jsonify({
+        "error": "Internal server error",
+        "type": type(original).__name__,
+        "message": str(original),
+        "traceback": traceback.format_exc()
+    }), 500
 
 
 if __name__ == "__main__":
