@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MOVIXA — Movies. Moods. Moments.</title>
+  <meta name="description" content="MOVIXA — Movies. Moods. Moments. Explore Bollywood and Hollywood movies with KMeans cluster recommendations, real-time sentiment analysis, and personal watchlist." />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="#" class="brand-logo" title="MOVIXA — Movies. Moods. Moments.">
+          <img src="movixa-icon-trans.png" alt="MOVIXA Logo" class="brand-logo-icon" />
+          <div class="brand-text-block">
+            <span class="brand-wordmark">MOVI<span class="brand-x">X</span><span class="brand-lambda">A</span></span>
+            <span class="brand-tagline">Movies. Moods. Moments.</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="nav-links" id="main-nav-links">
+        <a href="#hero-carousel" class="nav-link active">Home</a>
+        <a href="#latest-release-sec" class="nav-link">Latest</a>
+        <a href="#top-trending-sec" class="nav-link">Trending</a>
+        <a href="#select-genre-sec" class="nav-link">Genres</a>
+        <a href="#watchlist-sec" class="nav-link">Watchlist <span class="nav-badge" id="nav-watchlist-count">0</span></a>
+        <a href="#explore-catalog-sec" class="nav-link">Catalog</a>
+      </nav>
+
+      <div class="nav-right">
+        <div class="nav-search-trigger" id="nav-search-trigger" title="Quick Search">
+          <span class="icon">🔍</span>
+        </div>
+        <a href="#watchlist-sec" class="btn btn-watchlist-nav" id="nav-watchlist-btn">
+          <span class="btn-icon">🔖</span> Watchlist (<span id="header-watchlist-count">0</span>)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       HERO CAROUSEL / SLIDER (1-second auto-transition from right to left)
+       ========================================================================= -->
+  <section class="hero-slider-section" id="hero-carousel">
+    <!-- Background Slides Container -->
+    <div class="hero-slides-wrapper" id="hero-slides-wrapper">
+      <!-- Slides dynamically injected by script.js -->
+    </div>
+
+    <!-- Cinematic Vignette & Ambient Gradient -->
+    <div class="hero-vignette-overlay"></div>
+
+    <!-- Slide Content Overlay -->
+    <div class="hero-content-container" id="hero-active-content">
+      <div class="hero-studio-tag" id="hero-studio-tag">MOVIXA ORIGINALS PRESENTS</div>
+      <div class="hero-subtag" id="hero-subtag">FEATURED SELECTION</div>
+      <h1 class="hero-movie-title" id="hero-title">INTERSTELLAR</h1>
+
+      <div class="hero-meta-line" id="hero-meta">
+        <span id="hero-year">2014</span> • 
+        <span id="hero-runtime">2h 49m</span> • 
+        <span id="hero-lang">English</span> • 
+        <span id="hero-genres" class="hero-genre-highlight">Adventure, Drama, Sci-Fi</span> • 
+        <span class="hero-rating-badge" id="hero-rating">⭐ 8.1</span>
+      </div>
+
+      <p class="hero-synopsis" id="hero-overview">
+        Loading cinematic synopsis and overview...
+      </p>
+
+      <div class="hero-action-row">
+        <!-- Explore Movie Button (no streaming words) -->
+        <button class="hero-play-btn" id="hero-play-btn" title="Explore & Recommend">
+          <div class="play-circle-outer">
+            <span class="play-icon">✨</span>
+          </div>
+          <span class="play-label">EXPLORE MOVIE</span>
+        </button>
+
+        <!-- Watchlist Toggle on Hero -->
+        <button class="hero-watchlist-btn" id="hero-watchlist-toggle">
+          <span class="plus-icon">＋</span> <span id="hero-watchlist-text">Add to Watchlist</span>
+        </button>
+      </div>
+
+      <!-- Arrow Controls -->
+      <div class="hero-nav-arrows">
+        <button class="hero-arrow-btn" id="hero-prev-btn" title="Previous Movie">‹</button>
+        <button class="hero-arrow-btn" id="hero-next-btn" title="Next Movie">›</button>
+      </div>
+    </div>
+
+    <!-- Mini-Thumbnail Previews Bar (Bottom Right) -->
+    <div class="hero-thumbnail-previews" id="hero-thumbs-container">
+      <!-- Injected by script.js -->
+    </div>
+
+    <!-- Progress Indicator Bar -->
+    <div class="hero-timer-bar-track">
+      <div class="hero-timer-bar-fill" id="hero-timer-fill"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       INDUSTRY SWITCHER BAR (Bollywood / Hollywood / All Movies)
+       ========================================================================= -->
+  <div class="industry-switch-banner">
+    <div class="industry-switch-inner">
+      <span class="industry-switch-label">SELECT CINEMA:</span>
+      <div class="industry-pills-wrap">
+        <button class="industry-pill-btn active" data-industry="all">
+          🌍 ALL MOVIES
+        </button>
+        <button class="industry-pill-btn" data-industry="bollywood">
+          🇮🇳 BOLLYWOOD
+        </button>
+        <button class="industry-pill-btn" data-industry="hollywood">
+          🎬 HOLLYWOOD
+        </button>
+      </div>
+      <span class="industry-current-status" id="industry-status-badge">Showing All Cinema</span>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MAIN STREAMING ROWS CONTAINER
+       ========================================================================= -->
+  <main class="main-content-flow">
+
+    <!-- 1. LATEST RELEASE ROW -->
+    <section class="channel-row-section" id="latest-release-sec">
+      <div class="channel-header-col">
+        <h2 class="channel-heading red-bold-title">
+          <span>LATEST</span>
+          <span>RELEASE</span>
+        </h2>
+        <div class="channel-drag-label">
+          <span>DRAG TO NEXT</span>
+          <span class="drag-arrow">⟶</span>
+        </div>
+        <div class="channel-row-arrows">
+          <button class="row-scroll-btn" data-target="latest-cards-track" data-dir="-1">‹</button>
+          <button class="row-scroll-btn" data-target="latest-cards-track" data-dir="1">›</button>
+        </div>
+      </div>
+
+      <div class="channel-cards-viewport">
+        <div class="channel-cards-track" id="latest-cards-track">
+          <!-- Movie cards with thumbnails injected by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TOP TRENDING ROW (With Rank Numbers 1, 2, 3...) -->
+    <section class="channel-row-section" id="top-trending-sec">
+      <div class="channel-header-col">
+        <h2 class="channel-heading red-bold-title">
+          <span>TOP</span>
+          <span>TRENDING</span>
+        </h2>
+        <div class="channel-drag-label">
+          <span>DRAG TO NEXT</span>
+          <span class="drag-arrow">⟶</span>
+        </div>
+        <div class="channel-row-arrows">
+          <button class="row-scroll-btn" data-target="trending-cards-track" data-dir="-1">‹</button>
+          <button class="row-scroll-btn" data-target="trending-cards-track" data-dir="1">›</button>
+        </div>
+      </div>
+
+      <div class="channel-cards-viewport">
+        <div class="channel-cards-track trending-track" id="trending-cards-track">
+          <!-- Top trending ranked cards injected by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. SELECT GENRE ROW (Solid colorful cards) -->
+    <section class="channel-row-section" id="select-genre-sec">
+      <div class="channel-header-col">
+        <h2 class="channel-heading red-bold-title">
+          <span>SELECT</span>
+          <span>GENRE</span>
+        </h2>
+        <div class="channel-drag-label">
+          <span>DRAG TO NEXT</span>
+          <span class="drag-arrow">⟶</span>
+        </div>
+        <div class="channel-row-arrows">
+          <button class="row-scroll-btn" data-target="genre-cards-track" data-dir="-1">‹</button>
+          <button class="row-scroll-btn" data-target="genre-cards-track" data-dir="1">›</button>
+        </div>
+      </div>
+
+      <div class="channel-cards-viewport">
+        <div class="channel-cards-track genre-blocks-track" id="genre-cards-track">
+          <div class="genre-block-card genre-romantic" data-genre="Romance">
+            <h3>ROMANTIC</h3>
+          </div>
+          <div class="genre-block-card genre-thriller" data-genre="Thriller">
+            <h3>THRILLER</h3>
+          </div>
+          <div class="genre-block-card genre-comedy" data-genre="Comedy">
+            <h3>COMEDY</h3>
+          </div>
+          <div class="genre-block-card genre-adventure" data-genre="Adventure">
+            <h3>ADVENTURE</h3>
+          </div>
+          <div class="genre-block-card genre-action" data-genre="Action">
+            <h3>ACTION</h3>
+          </div>
+          <div class="genre-block-card genre-scifi" data-genre="Science Fiction">
+            <h3>SCI-FI</h3>
+          </div>
+          <div class="genre-block-card genre-horror" data-genre="Horror">
+            <h3>HORROR</h3>
+          </div>
+          <div class="genre-block-card genre-drama" data-genre="Drama">
+            <h3>DRAMA</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. MY WATCHLIST SECTION -->
+    <section class="channel-row-section watchlist-section" id="watchlist-sec">
+      <div class="channel-header-col">
+        <h2 class="channel-heading red-bold-title">
+          <span>MY</span>
+          <span>WATCHLIST</span>
+        </h2>
+        <div class="watchlist-counter-tag">
+          <span id="watchlist-total-count">0</span> MOVIES SAVED
+        </div>
+        <div class="channel-drag-label">
+          <span>DRAG TO NEXT</span>
+          <span class="drag-arrow">⟶</span>
+        </div>
+        <div class="channel-row-arrows">
+          <button class="row-scroll-btn" data-target="watchlist-cards-track" data-dir="-1">‹</button>
+          <button class="row-scroll-btn" data-target="watchlist-cards-track" data-dir="1">›</button>
+        </div>
+      </div>
+
+      <div class="channel-cards-viewport">
+        <div class="channel-cards-track" id="watchlist-cards-track">
+          <!-- Watchlist cards injected by script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FULL CATALOG EXPLORER & CLUSTER RECOMMENDER -->
+    <section class="catalog-explore-section" id="explore-catalog-sec">
+      <div class="catalog-header-bar">
+        <div>
+          <h2 class="section-banner-title">EXPLORE FULL CATALOG</h2>
+          <p class="section-banner-sub">Search across 4,800+ movies with KMeans cluster-powered recommendations.</p>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="catalog-search-box">
+          <span class="search-ico">🔍</span>
+          <input type="text" id="catalog-search-input" placeholder="Search by movie title (e.g. Interstellar, Stree 2, Avatar)..." />
+          <button class="clear-search-btn" id="catalog-clear-search">✕</button>
+        </div>
+      </div>
+
+      <!-- Genre Quick Filters -->
+      <div class="catalog-genre-pills" id="catalog-genre-pills">
+        <button class="pill-chip active" data-genre="All">All</button>
+        <!-- Populated via API -->
+      </div>
+
+      <div class="catalog-status-text" id="catalog-count-text">
+        Loading catalog movies...
+      </div>
+
+      <!-- Catalog Grid with Full Thumbnails -->
+      <div class="catalog-movie-grid" id="catalog-movie-grid">
+        <!-- 20 paginated movie cards injected here -->
+      </div>
+
+      <!-- Pagination -->
+      <div class="catalog-pagination">
+        <button id="catalog-prev-page" class="btn btn-outline" disabled>← Previous</button>
+        <span id="catalog-page-label" class="page-num-label">Page 1 of 1</span>
+        <button id="catalog-next-page" class="btn btn-outline">Next →</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       MODAL DIALOG (Movie Details + Recommendations + Watchlist + Reviews)
+       ========================================================================= -->
+  <div class="movie-detail-modal-backdrop" id="movie-modal" style="display: none;">
+    <div class="movie-modal-box glass-dark-card">
+      <button class="modal-close-cross" id="modal-close-cross">&times;</button>
+      <div class="modal-inner-scroll" id="modal-content-area">
+        <!-- Rendered by script.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="ott-footer">
+    <div class="footer-inner-grid">
+      <div class="footer-col brand-col">
+        <div class="footer-logo">
+          <img src="movixa-icon-trans.png" alt="MOVIXA" class="footer-logo-icon" />
+          <div class="brand-text-block">
+            <span class="brand-wordmark">MOVI<span class="brand-x">X</span><span class="brand-lambda">A</span></span>
+            <span class="brand-tagline">Movies. Moods. Moments.</span>
+          </div>
+        </div>
+        <p class="footer-contact-item">✉️ support@movixa.com</p>
+        <p class="footer-contact-item">📞 +91 (022) 2846-1234</p>
+        <p class="footer-subtext">MOVIXA — Movies. Moods. Moments. AI-Powered Next-Gen Movie Intelligence & Recommendations.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Cinema</h4>
+        <ul class="footer-menu">
+          <li><a href="#" onclick="selectIndustry('bollywood'); return false;">Bollywood Cinema</a></li>
+          <li><a href="#" onclick="selectIndustry('hollywood'); return false;">Hollywood Cinema</a></li>
+          <li><a href="#" onclick="selectIndustry('all'); return false;">All Global Movies</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 class="footer-heading">Navigation</h4>
+        <ul class="footer-menu">
+          <li><a href="#latest-release-sec">Latest Releases</a></li>
+          <li><a href="#top-trending-sec">Top Trending</a></li>
+          <li><a href="#select-genre-sec">Genre Explorer</a></li>
+          <li><a href="#watchlist-sec">My Watchlist</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-legal-bar">
+      <p>MOVIXA — Movies. Moods. Moments. Interactive Machine Learning Cinema Intelligence.</p>
+      <p>© 2026 MOVIXA. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

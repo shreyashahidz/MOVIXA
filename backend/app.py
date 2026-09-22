@@ -34,14 +34,22 @@ def health():
 # Serve Frontend SPA
 @app.route("/")
 def serve_index():
-    return send_from_directory(FRONTEND_DIR, "index.html")
+    if os.path.exists(os.path.join(FRONTEND_DIR, "index.html")):
+        return send_from_directory(FRONTEND_DIR, "index.html")
+    return jsonify({
+        "status": "ok",
+        "service": "MOVIXA — Movies. Moods. Moments.",
+        "message": "API backend active"
+    })
 
 
 @app.route("/<path:path>")
 def serve_static(path):
     if os.path.exists(os.path.join(FRONTEND_DIR, path)):
         return send_from_directory(FRONTEND_DIR, path)
-    return send_from_directory(FRONTEND_DIR, "index.html")
+    if os.path.exists(os.path.join(FRONTEND_DIR, "index.html")):
+        return send_from_directory(FRONTEND_DIR, "index.html")
+    return jsonify({"error": "Resource not found"}), 404
 
 
 @app.errorhandler(404)
