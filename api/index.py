@@ -21,7 +21,12 @@ class VercelFixMiddleware:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
-        matched = environ.get("HTTP_X_MATCHED_PATH") or environ.get("REQUEST_URI")
+        matched = (
+            environ.get("HTTP_X_MATCHED_PATH")
+            or environ.get("HTTP_X_VERCEL_PATH")
+            or environ.get("REQUEST_URI")
+            or environ.get("RAW_URI")
+        )
         if matched:
             if "?" in matched:
                 path, qs = matched.split("?", 1)
