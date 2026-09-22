@@ -1,0 +1,13 @@
+# Exclude raw training datasets from Vercel Serverless Function build
+data/raw/
+notebooks/
+scripts/
+download_datasets.py
+train_clustering.py
+train_sentiment.py
+evaluate.py
+fetch_posters.py
+.git
+.gitignore
+README.md
+playbook.md
