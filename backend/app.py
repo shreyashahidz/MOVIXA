@@ -8,14 +8,14 @@ ROOT_DIR = os.path.dirname(CURRENT_DIR)
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
 
 from backend.routes.recommend import recommend_bp
 from backend.routes.sentiment import sentiment_bp
 from backend.config import FRONTEND_DIR
 
-app = Flask(__name__, static_folder=FRONTEND_DIR, static_url_path="")
+app = Flask(__name__)
 CORS(app)
 
 # Register API blueprints for both /api and direct prefix
